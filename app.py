@@ -1,4 +1,3 @@
-
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -10,7 +9,8 @@ st.write('Sube una imagen de un número manuscrito y la CNN predecirá qué díg
 
 @st.cache_resource
 def get_model():
-    return load_model('mejor_modelo.h5')
+    # AQUÍ ESTÁ EL CAMBIO: añadimos compile=False
+    return load_model('mejor_modelo.h5', compile=False)
 
 model = get_model()
 
