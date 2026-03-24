@@ -1,16 +1,25 @@
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Dense
 from PIL import Image, ImageOps
 import cv2
+
+# --- PARCHE PARA EL BUG DE KERAS ---
+# Interceptamos la creación de las capas Dense y borramos el parámetro problemático
+class CustomDense(Dense):
+    def __init__(self, **kwargs):
+        kwargs.pop('quantization_config', None)
+        super().__init__(**kwargs)
+# -----------------------------------
 
 st.title('Clasificador MNIST de Dígitos')
 st.write('Sube una imagen de un número manuscrito y la CNN predecirá qué dígito es.')
 
 @st.cache_resource
 def get_model():
-    # AQUÍ ESTÁ EL CAMBIO: añadimos compile=False
-    return load_model('mejor_modelo.keras', compile=False)
+    # Le pasamos nuestro Dense parcheado a través de 'custom_objects'
+    return load_model('mejor_modelo.keras', custom_objects={'Dense': CustomDense}, compile=False)
 
 model = get_model()
 
